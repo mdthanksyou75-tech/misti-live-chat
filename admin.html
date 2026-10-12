@@ -1,1 +1,68 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Misti Admin</title><style>body{font-family:system-ui;background:#f5f0ff;margin:0}header{background:#7c3aed;color:#fff;padding:16px;font-weight:800;font-size:20px}.box{padding:20px}.card{background:#fff;padding:16px;border-radius:12px;margin-bottom:12px}input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px}button{background:#7c3aed;color:#fff;border:0;padding:10px 16px;border-radius:8px;font-weight:700;margin-top:8px}#msgs{height:300px;overflow:auto;background:#fff;border-radius:12px;padding:12px}.msg{padding:8px 12px;border-radius:10px;margin:6px 0;max-width:80%}.user{background:#fff;border:1px solid #eee}.admin{background:#7c3aed;color:#fff;margin-left:auto}</style></head><body><header>💜 Misti Live Chat - Admin</header><div class="box"><div class="card"><b>Admin Login</b><br><small>আপনার চ্যাট লিংক:</small><br><code id="link"></code></div><div id="msgs"></div><div class="card"><input id="t" placeholder="Reply লিখুন..."><button onclick="send()">Send</button></div></div><script>let db=JSON.parse(localStorage.getItem('misti')||'[]');function render(){let m=document.getElementById('msgs');m.innerHTML='';db.forEach(x=>{let d=document.createElement('div');d.className='msg '+(x.me?'admin':'user');d.innerText=x.text;m.appendChild(d)});m.scrollTop=m.scrollHeight}function send(){let v=document.getElementById('t').value;if(!v)return;db.push({text:v,me:true});localStorage.setItem('misti',JSON.stringify(db));document.getElementById('t').value='';render()}render();document.getElementById('link').innerText=location.href.replace('admin.html','');setInterval(()=>{let d=JSON.parse(localStorage.getItem('misti')||'[]');if(d.length!=db.length){db=d;render()}},1000)</script></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Misti Super Admin - All in One</title><style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui;background:#0f0f0f;color:#fff}
+#login{position:fixed;inset:0;z-index:99;background:#0f0f0f;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#login input{padding:14px 22px;border-radius:25px;border:1px solid #333;background:#1a1a1a;color:#fff;width:300px;text-align:center;font-size:16px}
+#login button{padding:12px 40px;border-radius:25px;border:none;background:#ff4d8d;color:#fff;font-weight:bold}
+.app{display:flex;height:100vh}.sidebar{width:340px;background:#1a1a1a;border-right:1px solid #2a2a2a;display:flex;flex-direction:column}
+.sidebar h2{padding:18px;color:#ff4d8d;border-bottom:1px solid #222;font-size:18px}
+.tabs{display:flex;gap:5px;padding:10px;border-bottom:1px solid #222;flex-wrap:wrap}.tabs button{padding:6px 12px;border-radius:20px;border:1px solid #333;background:#222;color:#ccc;font-size:11px;cursor:pointer}.tabs button.active{background:#ff4d8d;color:#fff;border-color:#ff4d8d}
+#userList{flex:1;overflow-y:auto}.uitem{padding:12px 15px;border-bottom:1px solid #222;cursor:pointer;display:flex;justify-content:space-between}
+.uitem:hover{background:#222}.uitem.active{background:#ff4d8d22;border-left:4px solid #ff4d8d}.uitem b{font-size:13px}.uitem small{color:#888;font-size:11px;display:block}
+.badge{background:#ff4d8d;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}.top{padding:12px 18px;background:#1a1a1a;border-bottom:1px solid #2a2a2a;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.controls{display:flex;gap:6px;flex-wrap:wrap}.controls button,.controls input{padding:7px 12px;border-radius:15px;border:1px solid #333;background:#222;color:#fff;font-size:12px}.controls button{cursor:pointer}.green{background:#00c85322!important;border-color:#00c853!important;color:#4cff8a!important}.red{background:#ff2a2a22!important;border-color:#ff3b3b!important;color:#ff8a8a!important}.pink{background:#ff4d8d!important;border:none!important;color:#fff!important}
+.panel{padding:15px;overflow-y:auto;flex:1}.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:15px;padding:15px;margin-bottom:12px}
+.card h3{color:#ff4d8d;margin-bottom:10px;font-size:14px}.row{display:flex;gap:8px;margin:6px 0;align-items:center;flex-wrap:wrap}.row label{width:110px;color:#888;font-size:12px}.row input,.row select{flex:1;padding:8px 12px;border-radius:10px;border:1px solid #333;background:#222;color:#fff}
+.messages{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:8px}.msg{max-width:75%;padding:9px 13px;border-radius:14px;font-size:13px}.msg.user{background:#222;align-self:flex-start}.msg.admin{background:#ff4d8d;align-self:flex-end}
+.inputArea{display:flex;gap:8px;padding:10px;background:#1a1a1a;border-top:1px solid #2a2a2a}.inputArea input{flex:1;padding:11px 16px;border-radius:25px;border:none;background:#2a2a2a;color:#fff}
+</style></head><body>
+<div id="login"><h1 style="color:#ff4d8d">Misti Super Admin</h1><input id="pass" type="password" placeholder="Admin Password"><button onclick="login()">Login</button><p id="err" style="color:#ff6b6b;font-size:12px"></p><small style="color:#666">Pass: misti123</small></div>
+<div class="app"><div class="sidebar"><h2>💎 Misti Control</h2><div class="tabs"><button class="active" onclick="setTab('inbox')">Inbox</button><button onclick="setTab('wallet')">Wallet</button><button onclick="setTab('gift')">Gift</button><button onclick="setTab('plan')">Plan</button><button onclick="setTab('banned')">Banned</button></div><div id="userList"></div></div>
+<div class="main"><div class="top"><b id="chatWith">Select User ID</b><div class="controls">
+<input id="amt" placeholder="Amount" type="number" style="width:90px"><button class="green" onclick="doRecharge('wallet')">Wallet+</button><button class="green" onclick="doRecharge('diamond')">Diamond+</button>
+<button id="banBtn" class="red" onclick="toggleBan()">Ban</button><button class="red" onclick="deleteChat()">Delete</button></div></div>
+<div id="mainPanel" class="panel">
+<div class="card"><h3>👤 User Info & Control</h3>
+<div class="row"><label>Wallet:</label><input id="wBal" disabled><button onclick="saveWallet()">Save</button></div>
+<div class="row"><label>Diamonds:</label><input id="dBal" type="number"><button onclick="saveDiamond()">Save</button></div>
+<div class="row"><label>Agent Plan:</label><select id="agentPlan"><option value="none">None</option><option value="silver">Silver Agent</option><option value="gold">Gold Agent</option><option value="platinum">Platinum Agent</option></select></div>
+<div class="row"><label>Host Plan:</label><select id="hostPlan"><option value="none">None</option><option value="basic">Basic Host</option><option value="pro">Pro Host</option><option value="super">Super Host</option></select></div>
+<div class="row"><label>Target / Fill:</label><input id="target" type="number" placeholder="Target amount"><input id="fill" type="number" placeholder="Filled amount"></div>
+<button class="pink" onclick="savePlans()" style="width:100%;margin-top:8px;padding:10px;border-radius:10px;border:none;font-weight:bold">💾 Save All Plans & Target</button>
+</div>
+<div class="card"><h3>🎁 Gift Send (Admin to User)</h3><div class="row"><select id="giftName"><option value="Rose">🌹 Rose - 10D</option><option value="Heart">❤️ Heart - 50D</option><option value="Diamond Ring">💍 Ring - 100D</option><option value="Car">🚗 Car - 500D</option><option value="Castle">🏰 Castle - 1000D</option><option value="Lion">🦁 Lion - 5000D</option></select><button class="pink" onclick="sendGift()">Send Gift</button></div><div id="giftHistory" style="margin-top:10px;font-size:12px;color:#aaa"></div></div>
+</div>
+<div class="messages" id="messages"></div>
+<div class="inputArea"><input id="msgInput" placeholder="Type admin reply..."><button onclick="sendMsg()" style="background:#ff4d8d;border:none;color:#fff;padding:11px 22px;border-radius:25px;font-weight:bold">Send</button></div>
+</div></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue,push,set,remove,update,get}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig={apiKey:"YOUR_KEY",authDomain:"misti-live-chat.firebaseapp.com",databaseURL:"https://misti-live-chat-default-rtdb.firebaseio.com",projectId:"misti-live-chat",storageBucket:"misti-live-chat.appspot.com",messagingSenderId:"123",appId:"1:123:web:abc"};
+const app=initializeApp(firebaseConfig);const db=getDatabase(app);
+const ADMIN_PASS="misti123";window.login=()=>{if(document.getElementById('pass').value===ADMIN_PASS){document.getElementById('login').style.display='none'}else{document.getElementById('err').innerText='Wrong Password!'}};
+let cur=null;let banned=false;let tab='inbox';
+window.setTab=(t)=>{tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadUsers();};
+function loadUsers(){
+const r=ref(db,'chats');onValue(r,(snap)=>{const ul=document.getElementById('userList');ul.innerHTML='';const data=snap.val();if(!data)return;
+Object.keys(data).forEach(uid=>{
+const msgs=Object.values(data[uid]).filter(m=>m.text);if(!msgs.length)return;const last=msgs[msgs.length-1];
+get(ref(db,'banned/'+uid)).then(b=>{if(tab==='banned'&&!b.val())return;if(tab!=='banned'&&b.val())return;
+const unread=msgs.filter(m=>m.sender==='user'&&!m.read).length;const div=document.createElement('div');div.className='uitem'+(cur===uid?' active':'');
+div.innerHTML=`<span><b>${uid.slice(0,16)}</b><small>${last.text.slice(0,20)}</small></span>${unread?`<span class="badge">${unread}</span>`:''}`;div.onclick=()=>open(uid);ul.appendChild(div);});});});}
+loadUsers();
+window.open=async(uid)=>{cur=uid;document.getElementById('chatWith').textContent=uid;const chatR=ref(db,'chats/'+uid);
+onValue(chatR,(s)=>{const mDiv=document.getElementById('messages');mDiv.innerHTML='';const d=s.val();if(!d)return;Object.values(d).forEach(m=>{if(!m.text)return;const el=document.createElement('div');el.className='msg '+(m.sender==='user'?'user':'admin');el.textContent=m.text;mDiv.appendChild(el);});mDiv.scrollTop=mDiv.scrollHeight;});
+const uSnap=await get(ref(db,'users/'+uid));const u=uSnap.val()||{};document.getElementById('wBal').value=u.wallet||0;document.getElementById('dBal').value=u.diamonds||0;document.getElementById('agentPlan').value=u.agentPlan||'none';document.getElementById('hostPlan').value=u.hostPlan||'none';document.getElementById('target').value=u.target||'';document.getElementById('fill').value=u.filled||'';
+const bSnap=await get(ref(db,'banned/'+uid));banned=bSnap.val()===true;document.getElementById('banBtn').textContent=banned?'Unban':'Ban';
+const gSnap=await get(ref(db,'gifts/'+uid));const gh=document.getElementById('giftHistory');gh.innerHTML='';if(gSnap.val()){Object.values(gSnap.val()).reverse().slice(0,10).forEach(g=>{gh.innerHTML+=`<div>🎁 ${g.name} - ${g.from} at ${new Date(g.time).toLocaleTimeString()}</div>`});}
+};
+window.sendMsg=()=>{const i=document.getElementById('msgInput');const t=i.value.trim();if(!t||!cur)return;push(ref(db,'chats/'+cur),{text:t,sender:'admin',time:Date.now(),read:true});i.value='';};
+window.doRecharge=(type)=>{const a=document.getElementById('amt').value;if(!a||!cur)return alert('Amount লিখুন');const v=parseInt(a);get(ref(db,'users/'+cur)).then(s=>{let u=s.val()||{};if(type==='wallet'){u.wallet=(parseInt(u.wallet)||0)+v;}else{u.diamonds=(parseInt(u.diamonds)||0)+v;}update(ref(db,'users/'+cur),u);push(ref(db,'chats/'+cur),{text:`✅ ${type} Recharge: ${v} Added by Admin`,sender:'admin',time:Date.now()});push(ref(db,'recharges/'+cur),{type:type,amount:v,time:Date.now()});alert(type+' '+v+' Done!');document.getElementById('amt').value='';});};
+window.saveWallet=()=>{if(!cur)return;update(ref(db,'users/'+cur),{wallet:parseInt(document.getElementById('wBal').value)||0});alert('Wallet Saved');};
+window.saveDiamond=()=>{if(!cur)return;update(ref(db,'users/'+cur),{diamonds:parseInt(document.getElementById('dBal').value)||0});alert('Diamond Saved');};
+window.savePlans=()=>{if(!cur)return;update(ref(db,'users/'+cur),{agentPlan:document.getElementById('agentPlan').value,hostPlan:document.getElementById('hostPlan').value,target:document.getElementById('target').value,filled:document.getElementById('fill').value});alert('Plan & Target Saved ✅');};
+window.toggleBan=()=>{if(!cur)return;set(ref(db,'banned/'+cur),!banned);banned=!banned;document.getElementById('banBtn').textContent=banned?'Unban':'Ban';alert(banned?'User Banned':'User Unbanned');};
+window.deleteChat=()=>{if(!cur)return;if(confirm('Delete Chat?'))remove(ref(db,'chats/'+cur));};
+window.sendGift=()=>{if(!cur)return;const name=document.getElementById('giftName').value;push(ref(db,'gifts/'+cur),{name:name,from:'Admin',time:Date.now()});push(ref(db,'chats/'+cur),{text:`🎁 Gift Received: ${name} from Admin!`,sender:'admin',time:Date.now()});alert('Gift Sent: '+name);};
+document.getElementById('msgInput').addEventListener('keypress',e=>{if(e.key==='Enter')sendMsg()});
+</script></body></html>
